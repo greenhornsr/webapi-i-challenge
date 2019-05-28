@@ -20,6 +20,7 @@ server.get('/now', (req, res) => {
     res.status(200).send(now);
 })
 
+// Returns an array of all the user objects contained in the database.
 server.get('/api/users', (req, res) => {
     db.find()
     .then(users => {
@@ -39,11 +40,40 @@ server.post('/api/users', (req, res) => {
     })
     .catch(err => {
         res.status(500).json({
-            success: false,
-            err,
-        })
+            success: false, err })
     })
 })
+
+// Returns the user object with the specified id.
+server.get('/api/users/:id', (req, res) => {
+    const {id} = req.params;
+    db.findById (id)
+    .then(user => {
+        res.status(201).json({ success: true, user });
+    })
+    .catch(err => {
+        res.status(500).json({ success: false, err })
+    })
+})
+
+// Removes the user with the specified id and returns the deleted user.
+server.delete('/api/users/:id', (req, res) => {
+    const {id} = req.params;
+    db.remove(id)
+    .then(deleted => {
+        if(deleted) {
+            res.status(204).end()
+        } else {
+            res.status(404).json({ success: false, message: " Cannot locate the user! "})
+        }
+    })
+    .catch(err => {
+        res.status(500).json({ success: false, err })
+    })
+})
+
+// Updates the user with the specified id using data from the request body. Returns the modified document, NOT the original.
+
 
 server.listen(4000, () => {
     console.log(`\n*** Server is running on http://localhost:4000 ***\n`);
