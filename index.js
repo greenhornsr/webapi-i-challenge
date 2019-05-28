@@ -36,13 +36,17 @@ server.post('/api/users', (req, res) => {
     const newuser = req.body;
     db.insert(newuser)
     .then(user => {
-        res.status(201).json({ success: true, user });
+        if (newuser.name && newuser.bio) {            
+                res.status(201).json({ success: true, user });
+        }else {
+            res.status(404).json({ success: false, message: "Must include a name and bio!"})
+        }
     })
     .catch(err => {
-        res.status(500).json({
-            success: false, err })
+        res.status(500).json({ success: false, err })
     })
 })
+
 
 // Returns the user object with the specified id.
 server.get('/api/users/:id', (req, res) => {
